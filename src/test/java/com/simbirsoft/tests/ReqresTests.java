@@ -1,11 +1,7 @@
 package com.simbirsoft.tests;
 
-import com.simbirsoft.config.TestConfig;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.aeonbits.owner.ConfigFactory;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
@@ -63,7 +59,9 @@ public class ReqresTests extends TestBase {
     }
 
     @Test
-    void updateUserTest() {
+    void updateUserTest() throws Exception {
+
+        properties.load(file);
 
         Map<String, String> jsonBody = new HashMap<>();
         jsonBody.put("name", "morpheus");
@@ -74,20 +72,20 @@ public class ReqresTests extends TestBase {
                         log().all().
                         header("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
                                 "(KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36").
-                        header("token", "QpwL5tke4Pnpja7X4").
+                        header("token", properties.getProperty("token")).
                         contentType(ContentType.JSON).
                         body(jsonBody).
                         when().
-                        post("/api/users").
+                        put("/api/users/2").
                         then().
                         log().all().
-                        statusCode(201).
+                        statusCode(200).
                         extract().response();
 
         String name = response.path("name");
         String job = response.path("job");
 
         assertEquals("morpheus", name);
-        assertEquals("leader", job);
+        assertEquals("zion resident", job);
     }
 }
